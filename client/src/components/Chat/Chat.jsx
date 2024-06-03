@@ -31,7 +31,7 @@ const Chat = () => {
 
   useEffect(() => {
 
-    const client = new W3CWebSocket('ws://192.168.100.7:3000/');
+    const client = new W3CWebSocket('wss://thriveultimate-zgn3.vercel.app/');
 
 
     client.onopen = () => {
