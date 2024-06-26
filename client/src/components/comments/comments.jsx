@@ -3,7 +3,7 @@ import { useState,useContext } from "react";
 import { useQuery, useQueryClient,useMutation } from "react-query";
 import { makeRequest } from "../../axios";
 
-import send from "../../../public/uploads/send.png"
+
 import "./comments.scss"
 import moment from "moment";
 
