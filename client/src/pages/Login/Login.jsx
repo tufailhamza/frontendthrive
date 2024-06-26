@@ -1,21 +1,27 @@
-// Login.js - Modified
-
-import React, { useState, useContext, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
-import { makeRequest } from "../../axios"
-import { useEffect } from 'react';
+import { makeRequest } from "../../axios";
+
+import emailIcon from '../../../public/uploads/email.png';
+import passIcon from '../../../public/uploads/pass.png';
+import googleIcon from '../../../public/uploads/google.png';
+import facebookIcon from '../../../public/uploads/face.png';
+import womenImage from '../../../public/uploads/women.png';
+import manImage from '../../../public/uploads/man.png';
+import userIcon from '../../../public/uploads/user.png';
+import nameFirstIcon from '../../../src/assets/namefirst.png';
 
 const Login = () => {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [invalidCredentials, setInvalidCredentials] = useState(false);
-  
+
   const toggleForm = () => {
     setShowLoginForm(!showLoginForm);
     setInvalidCredentials(false);
   };
+
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const { Login } = useContext(AuthContext);
@@ -56,7 +62,8 @@ const Login = () => {
     text_description: text,
     institute_type: institute_type,
     industry: industry,
-  })
+  });
+
   const handleClick = async (e) => {
     e.preventDefault();
     try {
@@ -80,39 +87,33 @@ const Login = () => {
         industry,
         account_type,
       };
-  
+
       console.log(userData);
       const response = await makeRequest.post('/Auth/signup', userData, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
-      // Handle the response as needed
+
       console.log(response);
       navigate("/");
-      // Navigate to the login page after successful signup
-      toggleForm()
- 
-
+      toggleForm();
     } catch (err) {
-      // Handle errors
-      alert("Error: " + err.message)
+      alert("Error: " + err.message);
       console.error(err.response?.data || err.message);
     }
   };
-  
+
   const [inputs_login, setInput_login] = useState({
     email: "",
     password: "",
   });
-  
 
   const handleAccountTypeChange = (value) => {
     setAccType(value);
     setInputs((prevInputs) => ({ ...prevInputs, account_type: value }));
   };
-  
+
   const [err, setErr] = useState(null);
   const navigate = useNavigate();
 
@@ -123,9 +124,8 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      if(await Login(inputs_login)==0)
-      {
-        throw new Error;
+      if (await Login(inputs_login) == 0) {
+        throw new Error();
       }
       navigate("/");
     } catch (error) {
@@ -134,9 +134,10 @@ const Login = () => {
       setErr(error);
     }
   };
+
   useEffect(() => {
     setInput_login({ email: "", password: "" });
-  }, invalidCredentials);
+  }, [invalidCredentials]);
 
   const handleCloseInvalidCredentials = () => {
     setInvalidCredentials(false);
@@ -145,12 +146,13 @@ const Login = () => {
     passwordRef.current.value = '';
     setInput_login({ email: "", password: "" });
   };
+
   return (
     <div className={styles.container}>
-    {/* Login Section */}
-    <div className={`${styles.loginside} ${showLoginForm ? styles.moveRight : styles.moveLeft}`}>
-      <h1>LOGIN</h1>
-      {invalidCredentials && (
+      {/* Login Section */}
+      <div className={`${styles.loginside} ${showLoginForm ? styles.moveRight : styles.moveLeft}`}>
+        <h1>LOGIN</h1>
+        {invalidCredentials && (
           <div className={styles.invalidCredentials}>
             <span>Invalid credentials. Please try again.</span>
             <button className={styles.closeButton} onClick={handleCloseInvalidCredentials}>
@@ -158,137 +160,133 @@ const Login = () => {
             </button>
           </div>
         )}
-      <p>How to get started at Thrive?</p>
-      <div className={styles.textfield}>
-        <img src="../../../public/uploads/email.png" alt="" />
-        <input type="Email" placeholder="Email" name='email'  onChange={handleChange}  ref={emailRef}  />
-      </div>
-      
-      <div className={styles.textfield}>
-        <img src="../../../public/uploads/pass.png" alt="" />
-        <input type="password" placeholder="Password" name='password'  onChange={handleChange} ref={passwordRef}/>
-      </div>
-
-      <button className={styles.btn} onClick={handleLogin}>Login Now</button>
-      <p className={styles.text}>
-        <b>Login</b> with others or <button id="signup" onClick={toggleForm} className={styles.signup} ><p className={styles.signuptext}>Signup</p></button>
-      </p>
-
-      <button className={styles.loginbtn1}>
-        <img src="../../../public/uploads/google.png" alt="" />
-        <img src="../../../public/uploads/face.png" alt="" />
-        
-      </button>
-
-    </div>
-
-    {/* Register Section */}
-    <div className={`${styles.registerside} ${!showLoginForm ? styles.moveLeft : styles.moveRight}`}>
-      <h1>REGISTER</h1>
-      <p>Enter Your Details !</p>
-      <div className={styles.textfield}>
-        <img src="../../../public/uploads/email.png" alt="" />
-        <input type="text" placeholder="Email"  onChange={(e) => {  setEmail(e.target.value);  }} name="email" />
-      </div>
-      <div className={styles.textfield}>
-        <img src="../../../public/uploads/user.png" alt="" />
-        <input type="text" placeholder="Username" onChange={(e) => {  setUsername(e.target.value);  }} name="username" />
-      </div>
-      <div className={styles.selectContainer}>
-      <select onChange={(e) => handleAccountTypeChange(e.target.value)} name="account_type" value={account_type}>
-              <option value="person">Person</option>
-              <option value="institute">Institute</option>
-              <option value="organization">Organization</option>
-            </select>
-            
-      </div>
-      {account_type === 'institute' || account_type === 'organization' ? (
+        <p>How to get started at Thrive?</p>
         <div className={styles.textfield}>
-          
-          <input
-            type="text"
-            placeholder="Name"
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            name="name"
-          />
+          <img src={emailIcon} alt="" />
+          <input type="Email" placeholder="Email" name='email' onChange={handleChange} ref={emailRef} />
         </div>
-      ) : (
-        <>
-          <div className={styles.textfield}>
-          <img src="../../../src/assets/namefirst.png" alt="" />
-            <input
-              type="text"
-              placeholder="First Name"
-              onChange={(e) => {
-                setFirstName(e.target.value);
-              }}
-              name="first_name"
-            />
-          </div>
-          <div className={styles.textfield}>
-          <img src="../../../src/assets/namefirst.png" alt="" />
-            <input
-              type="text"
-              placeholder="Last Name"
-              onChange={(e) => {
-                setLastName(e.target.value);
-              }}
-              name="last_name"
-            />
-          </div>
-        </>
-      )}
 
-      <div className={styles.selectContainer}>
-        
-      {account_type === 'person' && <select onChange={(e) => {  setGender(e.target.value);  }} name="gender" value={inputs.gender}>
+        <div className={styles.textfield}>
+          <img src={passIcon} alt="" />
+          <input type="password" placeholder="Password" name='password' onChange={handleChange} ref={passwordRef} />
+        </div>
+
+        <button className={styles.btn} onClick={handleLogin}>Login Now</button>
+        <p className={styles.text}>
+          <b>Login</b> with others or <button id="signup" onClick={toggleForm} className={styles.signup}><p className={styles.signuptext}>Signup</p></button>
+        </p>
+
+        <button className={styles.loginbtn1}>
+          <img src={googleIcon} alt="" />
+          <img src={facebookIcon} alt="" />
+        </button>
+      </div>
+
+      {/* Register Section */}
+      <div className={`${styles.registerside} ${!showLoginForm ? styles.moveLeft : styles.moveRight}`}>
+        <h1>REGISTER</h1>
+        <p>Enter Your Details !</p>
+        <div className={styles.textfield}>
+          <img src={emailIcon} alt="" />
+          <input type="text" placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} name="email" />
+        </div>
+        <div className={styles.textfield}>
+          <img src={userIcon} alt="" />
+          <input type="text" placeholder="Username" onChange={(e) => { setUsername(e.target.value); }} name="username" />
+        </div>
+        <div className={styles.selectContainer}>
+          <select onChange={(e) => handleAccountTypeChange(e.target.value)} name="account_type" value={account_type}>
+            <option value="person">Person</option>
+            <option value="institute">Institute</option>
+            <option value="organization">Organization</option>
+          </select>
+        </div>
+        {account_type === 'institute' || account_type === 'organization' ? (
+          <div className={styles.textfield}>
+            <input
+              type="text"
+              placeholder="Name"
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+              name="name"
+            />
+          </div>
+        ) : (
+          <>
+            <div className={styles.textfield}>
+              <img src={nameFirstIcon} alt="" />
+              <input
+                type="text"
+                placeholder="First Name"
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                }}
+                name="first_name"
+              />
+            </div>
+            <div className={styles.textfield}>
+              <img src={nameFirstIcon} alt="" />
+              <input
+                type="text"
+                placeholder="Last Name"
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                }}
+                name="last_name"
+              />
+            </div>
+          </>
+        )}
+
+        <div className={styles.selectContainer}>
+          {account_type === 'person' && (
+            <select onChange={(e) => { setGender(e.target.value); }} name="gender" value={inputs.gender}>
               <option value="male">Male</option>
               <option value="female">Female</option>
-            </select>}
-            
-      </div>
-      {account_type === 'person' && (
-        <div className={styles.dateContainer}>
-          <input
-            type="date"
-            placeholder="Date of Birth"
-            onChange={(e) => {
-              setDateOfBirth(e.target.value);
-            }}
-            name="date_of_birth"
-          />
+            </select>
+          )}
         </div>
-      )}
-      <div className={styles.textfield}>
-        <img src="../../../public/uploads/pass.png" alt="" />
-        <input type="password" placeholder="Password" onChange={(e) => {  setPassword(e.target.value);  }} name="password" />
+        {account_type === 'person' && (
+          <div className={styles.dateContainer}>
+            <input
+              type="date"
+              placeholder="Date of Birth"
+              onChange={(e) => {
+                setDateOfBirth(e.target.value);
+              }}
+              name="date_of_birth"
+            />
+          </div>
+        )}
+        <div className={styles.textfield}>
+          <img src={passIcon} alt="" />
+          <input type="password" placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} name="password" />
+        </div>
+
+        <button className={styles.btn} onClick={handleClick}>Sign Up</button>
+        <button className={styles.reg} onClick={toggleForm}><p className={styles.signuptext}>back to login page</p></button>
       </div>
 
-      <button className={styles.btn} onClick={handleClick}>Sign Up</button>
-      <button className={styles.reg} onClick={toggleForm}><p className={styles.signuptext}>back to login page</p></button>
+      {/* Image Section */}
+      <div className={styles.imgsection}>
+        <div className={styles.card}>
+          <h1>Come thrive with us!!!</h1>
+          <div className={styles.imageContainer}>
+            <img
+              src={showLoginForm ? womenImage : manImage}
+              alt="Thrive"
+              className={`${styles.image} ${showLoginForm ? '' : styles.hidden}`}
+            />
+            <img
+              src={showLoginForm ? manImage : manImage}
+              alt="Thrive"
+              className={`${styles.image} ${!showLoginForm ? '' : styles.hidden}`}
+            />
+          </div>
+        </div>
+      </div>
     </div>
-    {/* Image Section */}
-   <div className={styles.imgsection}>
-  <div className={styles.card}>
-    <h1>Come thrive with us!!!</h1>
-    <div className={styles.imageContainer}>
-      {/* Conditionally render images based on showLoginForm state */}
-      <img
-        src={showLoginForm ? "../../../public/uploads/women.png" : "../../../public/uploads/man.png"}
-        alt="Thrive"
-        className={`${styles.image} ${showLoginForm ? '' : styles.hidden}`}
-      />
-      <img
-        src={showLoginForm ? "../../../public/uploads/man.png" : "../../../public/uploads/man.png"}
-        alt="Thrive"
-        className={`${styles.image} ${!showLoginForm ? '' : styles.hidden}`}
-      />
-    </div>
-  </div>
-</div>
-  </div>
   );
 };
 
