@@ -68,7 +68,8 @@ const Person = ()=>
   });
   const {  data:friendsdata } = useQuery(['Connection'],async () => {
     return  await makeRequest.get(`/Connection?user_id=${currentUser.data.user.user_id}`)
-      .then((res) => res.data);
+      .then((res) => res.data)
+       .catch((error) => error);
   });
   const queryClient = useQueryClient();
 
